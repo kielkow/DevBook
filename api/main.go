@@ -11,8 +11,9 @@ import (
 func main() {
 	config.SetEnv()
 
-	fmt.Println("Start DevBook API - Listenning Port 5000")
 	r := router.Generate()
+
+	fmt.Printf("Start DevBook API - Listenning Port: %d", config.Port)
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", config.Port), r))
 }
