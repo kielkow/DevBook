@@ -3,6 +3,7 @@ package repositories
 import (
 	"api/src/models"
 	"database/sql"
+	"fmt"
 )
 
 // Users repository
@@ -34,4 +35,33 @@ func (repository Users) Create(user models.User) (uint64, error) {
 	}
 
 	return uint64(lastIDInserted), nil
+}
+
+// Search users by name or nick on database
+func (repository Users) Search(nameOrNick string) ([]models.User, error) {
+	nameOrNick = fmt.Sprintf("%%%s%%", nameOrNick)
+
+	lines, error := repository.db.Query(
+		"SELECT id, name, nick, email, createdAt FROM users WHERE name LIKE ? OR nick LIKE ?",
+		nameOrNick, nameOrNick)
+
+	if error != nil {
+		return nil, error
+	}
+
+	defer lines.Close()
+
+	var users []models.User
+	for lines.Next() {
+		var user models.User
+
+		if error := lines.Scan(
+			&user.ID, &user.Name, &user.Nick, &user.Email, &user.CreatedAt); error != nil {
+			return nil, error
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
 }
