@@ -1,6 +1,7 @@
 package models
 
 import (
+	"api/src/security"
 	"errors"
 	"strings"
 	"time"
@@ -24,7 +25,9 @@ func (user *User) Prepare(step string) error {
 		return error
 	}
 
-	user.format()
+	if error := user.format(step); error != nil {
+		return error
+	}
 
 	return nil
 }
@@ -53,8 +56,19 @@ func (user *User) validate(step string) error {
 	return nil
 }
 
-func (user *User) format() {
+func (user *User) format(step string) error {
 	user.Name = strings.TrimSpace(user.Name)
 	user.Nick = strings.TrimSpace(user.Nick)
 	user.Email = strings.TrimSpace(user.Email)
+
+	if step == "create" {
+		passwordHash, error := security.Hash(user.Password)
+		if error != nil {
+			return error
+		}
+
+		user.Password = string(passwordHash)
+	}
+
+	return nil
 }
