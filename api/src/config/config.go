@@ -15,6 +15,9 @@ var (
 
 	// Port to connect with database
 	Port = 0
+
+	// SecretKey key to assign token
+	SecretKey []byte
 )
 
 // SetEnv func set env variables
@@ -35,4 +38,6 @@ func SetEnv() {
 		os.Getenv("DB_PASSWORD"),
 		os.Getenv("DB_NAME"),
 	)
+
+	SecretKey = []byte(os.Getenv("SECRET_KEY"))
 }
