@@ -167,6 +167,17 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userIDToken, error := authentication.ExtractUserID(r)
+	if error != nil {
+		responses.Error(w, http.StatusUnauthorized, error)
+		return
+	}
+
+	if userID != userIDToken {
+		responses.Error(w, http.StatusForbidden, errors.New("Is not possible delete another user"))
+		return
+	}
+
 	db, error := database.Connect()
 	if error != nil {
 		responses.Error(w, http.StatusInternalServerError, error)
