@@ -6,6 +6,7 @@ import (
 	"api/src/models"
 	"api/src/repositories"
 	"api/src/responses"
+	"api/src/security"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
@@ -320,4 +321,69 @@ func SearchFollowing(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses.JSON(w, http.StatusOK, users)
+}
+
+// UpdatePassword func
+func UpdatePassword(w http.ResponseWriter, r *http.Request) {
+	userIDToken, error := authentication.ExtractUserID(r)
+	if error != nil {
+		responses.Error(w, http.StatusUnauthorized, error)
+		return
+	}
+
+	params := mux.Vars(r)
+	userID, error := strconv.ParseUint(params["userId"], 10, 64)
+	if error != nil {
+		responses.Error(w, http.StatusBadRequest, error)
+		return
+	}
+
+	if userIDToken != userID {
+		responses.Error(w, http.StatusForbidden, errors.New("Is not possible update another user"))
+		return
+	}
+
+	requestBody, error := ioutil.ReadAll(r.Body)
+	if error != nil {
+		responses.Error(w, http.StatusUnprocessableEntity, error)
+		return
+	}
+
+	var password models.Password
+	if error = json.Unmarshal(requestBody, &password); error != nil {
+		responses.Error(w, http.StatusBadRequest, error)
+		return
+	}
+
+	db, error := database.Connect()
+	if error != nil {
+		responses.Error(w, http.StatusInternalServerError, error)
+		return
+	}
+	defer db.Close()
+
+	repository := repositories.NewUsersRepository(db)
+	passwordSaved, error := repository.SearchPassword(userID)
+	if error != nil {
+		responses.Error(w, http.StatusInternalServerError, error)
+		return
+	}
+
+	if error = security.ValidatePassword(passwordSaved, password.Current); error != nil {
+		responses.Error(w, http.StatusUnauthorized, errors.New("Password invalid"))
+		return
+	}
+
+	passwordHash, error := security.Hash(password.New)
+	if error != nil {
+		responses.Error(w, http.StatusBadRequest, error)
+		return
+	}
+
+	if error = repository.UpdatePassword(userID, string(passwordHash)); error != nil {
+		responses.Error(w, http.StatusInternalServerError, error)
+		return
+	}
+
+	responses.JSON(w, http.StatusNoContent, nil)
 }
