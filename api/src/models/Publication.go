@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"errors"
+	"strings"
+	"time"
+)
 
 // Publication struct
 type Publication struct {
@@ -11,4 +15,32 @@ type Publication struct {
 	AuthorNick string    `json:"authorNick,omitempty"`
 	Likes      uint64    `json:"likes"`
 	CreatedAt  time.Time `json:"createdAt,omitempty"`
+}
+
+// Prepare publication request body
+func (publication *Publication) Prepare() error {
+	if error := publication.validate(); error != nil {
+		return error
+	}
+
+	publication.format()
+
+	return nil
+}
+
+func (publication *Publication) validate() error {
+	if publication.Title == "" {
+		return errors.New("Title is required")
+	}
+
+	if publication.Content == "" {
+		return errors.New("Content is required")
+	}
+
+	return nil
+}
+
+func (publication *Publication) format() {
+	publication.Title = strings.TrimSpace(publication.Title)
+	publication.Content = strings.TrimSpace(publication.Content)
 }
