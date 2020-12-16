@@ -60,7 +60,27 @@ func CreatePublication(w http.ResponseWriter, r *http.Request) {
 
 // SearchPublications func
 func SearchPublications(w http.ResponseWriter, r *http.Request) {
+	userID, error := authentication.ExtractUserID(r)
+	if error != nil {
+		responses.Error(w, http.StatusUnauthorized, error)
+		return
+	}
 
+	db, error := database.Connect()
+	if error != nil {
+		responses.Error(w, http.StatusInternalServerError, error)
+		return
+	}
+	defer db.Close()
+
+	repository := repositories.NewPublicationsRepository(db)
+	publications, error := repository.Search(userID)
+	if error != nil {
+		responses.Error(w, http.StatusInternalServerError, error)
+		return
+	}
+
+	responses.JSON(w, http.StatusOK, publications)
 }
 
 // SearchPublication func
