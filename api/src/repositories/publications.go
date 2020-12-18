@@ -69,7 +69,7 @@ func (repository Publications) SearchByID(publicationID uint64) (models.Publicat
 	return publication, nil
 }
 
-// Search publications by user id
+// Search publications by user id from user and followers
 func (repository Publications) Search(userID uint64) ([]models.Publication, error) {
 	lines, error := repository.db.Query(`
 		SELECT DISTINCT p.*, u.nick FROM publications p 
@@ -134,4 +134,39 @@ func (repository Publications) Delete(publicationID uint64) error {
 	}
 
 	return nil
+}
+
+// SearchByUserID func
+func (repository Publications) SearchByUserID(userID uint64) ([]models.Publication, error) {
+	lines, error := repository.db.Query(`
+		SELECT p.*, u.nick FROM publications p 
+		JOIN users u ON u.id = p.author_id
+		WHERE p.author_id = ?`,
+		userID,
+	)
+	if error != nil {
+		return nil, error
+	}
+	defer lines.Close()
+
+	var publications []models.Publication
+	for lines.Next() {
+		var publication models.Publication
+
+		if error = lines.Scan(
+			&publication.ID,
+			&publication.Title,
+			&publication.Content,
+			&publication.AuthorID,
+			&publication.Likes,
+			&publication.CreatedAt,
+			&publication.AuthorNick,
+		); error != nil {
+			return nil, error
+		}
+
+		publications = append(publications, publication)
+	}
+
+	return publications, nil
 }
