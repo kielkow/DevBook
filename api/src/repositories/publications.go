@@ -170,3 +170,18 @@ func (repository Publications) SearchByUserID(userID uint64) ([]models.Publicati
 
 	return publications, nil
 }
+
+// Like func
+func (repository Publications) Like(publicationID uint64) error {
+	statement, error := repository.db.Prepare("UPDATE publications SET likes = likes + 1 WHERE id = ?")
+	if error != nil {
+		return error
+	}
+	defer statement.Close()
+
+	if _, error := statement.Exec(publicationID); error != nil {
+		return error
+	}
+
+	return nil
+}
