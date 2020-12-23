@@ -1,11 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>DevBook - Login</title>
+
+    <link rel="stylesheet" type="text/css" href="/assets/css/login.css">
 </head>
+
 <body>
-    <h2>Login</h2>
+    <div class="container-login">
+        <div>
+            <form class="devbook-form" id="login">
+                <span>Welcome to DevBook</span>
+                <div>
+                    <input type="text" name="email" id="email" placeholder="example@example.com" required="required">
+                </div>
+                <div>
+                    <input type="password" name="password" id="password" placeholder="password@123" required="required">
+                </div>
+
+                <a href="#"> Create account </a>
+                <button type="submit" class="btn-devbook">Login</button>
+            </form>
+        </div>
+    </div>
 </body>
+
 </html>
