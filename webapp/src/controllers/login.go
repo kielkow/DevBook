@@ -1,8 +1,11 @@
 package controllers
 
-import "net/http"
+import (
+	"net/http"
+	"webapp/src/utils"
+)
 
 // RenderLoginScreen func
 func RenderLoginScreen(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Login Screen"))
+	utils.ExecutingTemplate(w, "login.html", nil)
 }
