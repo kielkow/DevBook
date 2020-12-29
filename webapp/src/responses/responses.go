@@ -8,7 +8,7 @@ import (
 
 // ErrorAPI interface
 type ErrorAPI struct {
-	Erro string `json:"error"`
+	Error string `json:"error"`
 }
 
 // JSON response func

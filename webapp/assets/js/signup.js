@@ -27,6 +27,7 @@ function createUser(event) {
     }).done(function() {
         alert("Success to create user");
     }).fail(function(error) {
+        console.log(error);
         alert("Error to create user");
     });
 }
