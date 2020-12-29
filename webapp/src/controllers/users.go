@@ -3,9 +3,9 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
+	"webapp/src/responses"
 )
 
 // CreateUser func
@@ -28,5 +28,5 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer response.Body.Close()
 
-	fmt.Println(response.Body)
+	responses.JSON(w, response.StatusCode, nil)
 }
