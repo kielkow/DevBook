@@ -6,6 +6,11 @@ import (
 	"net/http"
 )
 
+// ErrorAPI interface
+type ErrorAPI struct {
+	Erro string `json:"error"`
+}
+
 // JSON response func
 func JSON(w http.ResponseWriter, statusCode int, data interface{}) {
 	w.Header().Set("Content-Type", "application/json")
@@ -19,11 +24,11 @@ func JSON(w http.ResponseWriter, statusCode int, data interface{}) {
 	}
 }
 
-// Error response func
-func Error(w http.ResponseWriter, statusCode int, error error) {
-	JSON(w, statusCode, struct {
-		Error string `json:"error"`
-	}{
-		Error: error.Error(),
-	})
+// TreatError response func
+func TreatError(w http.ResponseWriter, r *http.Response) {
+	var error ErrorAPI
+
+	json.NewDecoder(r.Body).Decode(&error)
+
+	JSON(w, r.StatusCode, error)
 }

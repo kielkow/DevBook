@@ -28,5 +28,10 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	defer response.Body.Close()
 
+	if response.StatusCode >= 400 {
+		responses.TreatError(w, response)
+		return
+	}
+
 	responses.JSON(w, response.StatusCode, nil)
 }

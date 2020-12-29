@@ -24,5 +24,9 @@ function createUser(event) {
             nick,
             password,
         }
+    }).done(function() {
+        alert("Success to create user");
+    }).fail(function(error) {
+        alert("Error to create user");
     });
 }
