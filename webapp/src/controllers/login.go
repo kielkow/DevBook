@@ -3,18 +3,18 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"net/http"
 	"webapp/src/responses"
 )
 
-// CreateUser func
-func CreateUser(w http.ResponseWriter, r *http.Request) {
+// Signin func
+func Signin(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 
 	user, error := json.Marshal(map[string]string{
-		"name":     r.FormValue("name"),
 		"email":    r.FormValue("email"),
-		"nick":     r.FormValue("nick"),
 		"password": r.FormValue("password"),
 	})
 	if error != nil {
@@ -22,7 +22,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, error := http.Post("http://localhost:5000/users", "application/json", bytes.NewBuffer(user))
+	response, error := http.Post("http://localhost:5000/login", "application/json", bytes.NewBuffer(user))
 	if error != nil {
 		responses.JSON(w, http.StatusInternalServerError, responses.ErrorAPI{Error: error.Error()})
 		return
@@ -34,5 +34,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responses.JSON(w, response.StatusCode, nil)
+	token, _ := ioutil.ReadAll(response.Body)
+
+	fmt.Println(response.StatusCode, string(token))
 }
