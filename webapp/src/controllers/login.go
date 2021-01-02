@@ -3,9 +3,8 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
 	"net/http"
+	"webapp/src/models"
 	"webapp/src/responses"
 )
 
@@ -34,7 +33,11 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, _ := ioutil.ReadAll(response.Body)
+	var authenticationData models.AuthenticationData
+	if error = json.NewDecoder(response.Body).Decode(&authenticationData); error != nil {
+		responses.JSON(w, http.StatusUnprocessableEntity, responses.ErrorAPI{Error: error.Error()})
+		return
+	}
 
-	fmt.Println(response.StatusCode, string(token))
+	responses.JSON(w, http.StatusOK, nil)
 }
