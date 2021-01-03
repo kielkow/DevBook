@@ -3,7 +3,9 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"webapp/src/config"
 	"webapp/src/models"
 	"webapp/src/responses"
 )
@@ -21,7 +23,8 @@ func Signin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, error := http.Post("http://localhost:5000/login", "application/json", bytes.NewBuffer(user))
+	url := fmt.Sprintf("%s/login", config.APIURL)
+	response, error := http.Post(url, "application/json", bytes.NewBuffer(user))
 	if error != nil {
 		responses.JSON(w, http.StatusInternalServerError, responses.ErrorAPI{Error: error.Error()})
 		return
