@@ -1,7 +1,10 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
+	"webapp/src/config"
+	"webapp/src/requests"
 	"webapp/src/utils"
 )
 
@@ -17,5 +20,9 @@ func RenderSignupScreen(w http.ResponseWriter, r *http.Request) {
 
 // RenderHomePage func
 func RenderHomePage(w http.ResponseWriter, r *http.Request) {
+	url := fmt.Sprintf("%s/publications", config.APIURL)
+	response, error := requests.DoAuthenticateRequest(r, http.MethodGet, url, nil)
+	fmt.Println(response.StatusCode, error)
+
 	utils.ExecutingTemplate(w, "home.html", nil)
 }
