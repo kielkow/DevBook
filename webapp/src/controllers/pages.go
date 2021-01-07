@@ -1,10 +1,13 @@
 package controllers
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"webapp/src/config"
+	"webapp/src/models"
 	"webapp/src/requests"
+	"webapp/src/responses"
 	"webapp/src/utils"
 )
 
@@ -22,7 +25,22 @@ func RenderSignupScreen(w http.ResponseWriter, r *http.Request) {
 func RenderHomePage(w http.ResponseWriter, r *http.Request) {
 	url := fmt.Sprintf("%s/publications", config.APIURL)
 	response, error := requests.DoAuthenticateRequest(r, http.MethodGet, url, nil)
-	fmt.Println(response.StatusCode, error)
+	if error != nil {
+		responses.JSON(w, http.StatusInternalServerError, responses.ErrorAPI{Error: error.Error()})
+		return
+	}
+	defer response.Body.Close()
 
-	utils.ExecutingTemplate(w, "home.html", nil)
+	if response.StatusCode >= 400 {
+		responses.TreatError(w, response)
+		return
+	}
+
+	var publications []models.Publication
+	if error = json.NewDecoder(response.Body).Decode(&publications); error != nil {
+		responses.JSON(w, http.StatusUnprocessableEntity, responses.ErrorAPI{Error: error.Error()})
+		return
+	}
+
+	utils.ExecutingTemplate(w, "home.html", publications)
 }
