@@ -7,5 +7,12 @@
 </head>
 <body>
     <h2>Home Page</h2>
+
+    {{ range . }}
+        <h4> Title: {{ .Title }} </h4>
+        <h4> Content: {{ .Content }} </h4>
+
+        <hr/>
+    {{ end }}
 </body>
 </html>
