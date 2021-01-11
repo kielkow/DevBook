@@ -42,11 +42,14 @@
                 <div class="jumbotron">
                     <h1 class="display-4"> {{ .Title }} </h1>
                     <p class="lead"> {{ .Content }} </p>
-
                     <a href="#"> {{ .AuthorNick }} - {{ .CreatedAt }}</a>
-
                     <hr class="my-4">
-                    <p>Buttons</p>
+
+                    {{ if (eq .AuthorID $.UserID) }}
+                        <p>like edit delete</p>
+                    {{ else }}
+                        <p>like</p>
+                    {{ end }}
                 </div>
                 {{ end }}
             </div>
