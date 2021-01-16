@@ -11,6 +11,8 @@ import (
 	"webapp/src/requests"
 	"webapp/src/responses"
 	"webapp/src/utils"
+
+	"github.com/gorilla/mux"
 )
 
 // RenderLoginScreen func
@@ -54,4 +56,35 @@ func RenderHomePage(w http.ResponseWriter, r *http.Request) {
 		Publications: publications,
 		UserID:       userID,
 	})
+}
+
+// RenderEditPublicationPage func
+func RenderEditPublicationPage(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	publicationID, error := strconv.ParseUint(params["publicationId"], 10, 64)
+	if error != nil {
+		responses.JSON(w, http.StatusBadRequest, responses.ErrorAPI{Error: error.Error()})
+		return
+	}
+
+	url := fmt.Sprintf("%s/publications/%d", config.APIURL, publicationID)
+	response, error := requests.DoAuthenticateRequest(r, http.MethodGet, url, nil)
+	if error != nil {
+		responses.JSON(w, http.StatusInternalServerError, responses.ErrorAPI{Error: error.Error()})
+		return
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode >= 400 {
+		responses.TreatError(w, response)
+		return
+	}
+
+	var publication models.Publication
+	if error = json.NewDecoder(response.Body).Decode(&publication); error != nil {
+		responses.JSON(w, http.StatusUnprocessableEntity, responses.ErrorAPI{Error: error.Error()})
+		return
+	}
+
+	utils.ExecutingTemplate(w, "update-publication.html", publication)
 }
