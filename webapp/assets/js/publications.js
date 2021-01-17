@@ -3,6 +3,8 @@ $('#new-publication').on('submit', createPublication);
 $(document).on('click', '.like-publication', likePublication);
 $(document).on('click', '.dislike-publication', dislikePublication);
 
+$('#update-publication').on('click', updatePublication);
+
 function createPublication(event) {
     event.preventDefault();
 
@@ -77,5 +79,30 @@ function dislikePublication(event) {
         alert("Error to dislike publication");
     }).always(function() {
         clickedElement.prop('disabled', false);
+    });
+}
+
+function updatePublication() {
+    $(this).prop('disabled', true);
+
+    const publicationId = $(this).data('publication-id');
+
+    const title = $('#title').val();
+    const content = $('#content').val();
+
+    $.ajax({
+        url: `/publications/${publicationId}`,
+        method: 'PUT',
+        data: {
+            title,
+            content,
+        }
+    }).done(function() {
+        alert("Success to update publication");
+    }).fail(function(error) {
+        console.log(error);
+        alert("Error to update publication");
+    }).always(function() {
+        $('#update-publication').prop('disabled', false);
     });
 }

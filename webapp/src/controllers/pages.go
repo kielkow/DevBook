@@ -58,8 +58,8 @@ func RenderHomePage(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// RenderEditPublicationPage func
-func RenderEditPublicationPage(w http.ResponseWriter, r *http.Request) {
+// RenderUpdatePublicationPage func
+func RenderUpdatePublicationPage(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	publicationID, error := strconv.ParseUint(params["publicationId"], 10, 64)
 	if error != nil {

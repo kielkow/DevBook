@@ -91,3 +91,38 @@ func DislikePublication(w http.ResponseWriter, r *http.Request) {
 
 	responses.JSON(w, response.StatusCode, nil)
 }
+
+// UpdatePublication func
+func UpdatePublication(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	publicationID, error := strconv.ParseUint(params["publicationId"], 10, 64)
+	if error != nil {
+		responses.JSON(w, http.StatusBadRequest, responses.ErrorAPI{Error: error.Error()})
+		return
+	}
+
+	r.ParseForm()
+	publication, error := json.Marshal(map[string]string{
+		"title":   r.FormValue("title"),
+		"content": r.FormValue("content"),
+	})
+	if error != nil {
+		responses.JSON(w, http.StatusBadRequest, responses.ErrorAPI{Error: error.Error()})
+		return
+	}
+
+	url := fmt.Sprintf("%s/publications/%d", config.APIURL, publicationID)
+	response, error := requests.DoAuthenticateRequest(r, http.MethodPut, url, bytes.NewBuffer(publication))
+	if error != nil {
+		responses.JSON(w, http.StatusInternalServerError, responses.ErrorAPI{Error: error.Error()})
+		return
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode >= 400 {
+		responses.TreatError(w, response)
+		return
+	}
+
+	responses.JSON(w, response.StatusCode, nil)
+}
