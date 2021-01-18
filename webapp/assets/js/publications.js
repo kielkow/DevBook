@@ -23,7 +23,7 @@ function createPublication(event) {
         window.location = '/home';
     }).fail(function(error) {
         console.log(error);
-        alert("Error to create a publication");
+        Swal.fire('Ops...', 'Error to create publication!', 'error');
     });
 }
 
@@ -49,7 +49,7 @@ function likePublication(event) {
         clickedElement.removeClass('like-publication');
     }).fail(function(error) {
         console.log(error);
-        alert("Error to like publication");
+        Swal.fire('Ops...', 'Error to like publication!', 'error');
     }).always(function() {
         clickedElement.prop('disabled', false);
     });
@@ -77,7 +77,7 @@ function dislikePublication(event) {
         clickedElement.addClass('like-publication');
     }).fail(function(error) {
         console.log(error);
-        alert("Error to dislike publication");
+        Swal.fire('Ops...', 'Error to dislike publication!', 'error');
     }).always(function() {
         clickedElement.prop('disabled', false);
     });
@@ -99,32 +99,45 @@ function updatePublication() {
             content,
         }
     }).done(function() {
-        alert("Success to update publication");
+        Swal.fire('Success!', 'Publication updated!', 'success').then(function() {
+            window.location = '/home';
+        });
     }).fail(function(error) {
         console.log(error);
-        alert("Error to update publication");
+        Swal.fire('Ops...', 'Error to update publication!', 'error');
     }).always(function() {
         $('#update-publication').prop('disabled', false);
     });
 }
+
 function deletePublication(event) {
     event.preventDefault();
+
+    Swal.fire({
+        title: "Attention!",
+        text: "Are you sure about delete this publication?",
+        showCancelButton: true,
+        cancelButtonText: "Cancel",
+        icon: "warning"
+    }).then(function(confirmation) {
+        if (!confirmation.value) return;
+
+        const clickedElement = $(event.target);
+        const publication = clickedElement.closest('div');
+        const publicationId = publication.data('publication-id');
     
-    const clickedElement = $(event.target);
-    const publication = clickedElement.closest('div');
-    const publicationId = publication.data('publication-id');
-
-    clickedElement.prop('disabled', true);
-
-    $.ajax({
-        url: `/publications/${publicationId}`,
-        method: 'DELETE'
-    }).done(function() {
-        publication.fadeOut('slow', function() {
-            $(this).remove();
+        clickedElement.prop('disabled', true);
+    
+        $.ajax({
+            url: `/publications/${publicationId}`,
+            method: 'DELETE'
+        }).done(function() {
+            publication.fadeOut('slow', function() {
+                $(this).remove();
+            });
+        }).fail(function(error) {
+            console.log(error);
+            Swal.fire('Ops...', 'Error to delete publication!', 'error');
         });
-    }).fail(function(error) {
-        console.log(error);
-        alert("Error to delete publication");
     });
 }

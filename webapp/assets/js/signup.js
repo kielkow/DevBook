@@ -7,7 +7,7 @@ function createUser(event) {
     const confirmPassword = $('#confirmation-password').val();
     
     if (password != confirmPassword) {
-        alert("Passwords not match!");
+        Swal.fire('Ops...', 'Passwords does not match!', 'error');
         return;
     }
 
@@ -25,9 +25,23 @@ function createUser(event) {
             password,
         }
     }).done(function() {
-        alert("Success to create user");
+        Swal.fire('Success!', 'User created!', 'success').then(function() {
+            $.ajax({
+                url: '/login',
+                method: 'POST',
+                data: {
+                    email,
+                    password,
+                }
+            }).done(function() {
+                window.location = '/home';
+            }).fail(function(error) {
+                console.log(error);
+                Swal.fire('Ops...', 'Error to sign in!', 'error');
+            });
+        });
     }).fail(function(error) {
         console.log(error);
-        alert("Error to create user");
+        Swal.fire('Ops...', 'Error to create user!', 'error');
     });
 }

@@ -17,6 +17,6 @@ function signin(event) {
         window.location = '/home';
     }).fail(function(error) {
         console.log(error);
-        alert("Error to signin");
+        Swal.fire('Ops...', 'Error to sign in!', 'error');
     });
 }
