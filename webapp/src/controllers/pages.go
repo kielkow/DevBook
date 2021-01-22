@@ -17,6 +17,13 @@ import (
 
 // RenderLoginScreen func
 func RenderLoginScreen(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := cookies.Read(r)
+
+	if cookie["token"] != "" {
+		http.Redirect(w, r, "/home", 302)
+		return
+	}
+
 	utils.ExecutingTemplate(w, "login.html", nil)
 }
 
