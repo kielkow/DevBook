@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"webapp/src/config"
 	"webapp/src/cookies"
 	"webapp/src/models"
@@ -94,4 +95,30 @@ func RenderUpdatePublicationPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.ExecutingTemplate(w, "update-publication.html", publication)
+}
+
+// RenderUsersPage func
+func RenderUsersPage(w http.ResponseWriter, r *http.Request) {
+	nameOrNick := strings.ToLower(r.URL.Query().Get("user"))
+	url := fmt.Sprintf("%s/users?user=%s", config.APIURL, nameOrNick)
+
+	response, error := requests.DoAuthenticateRequest(r, http.MethodGet, url, nil)
+	if error != nil {
+		responses.JSON(w, http.StatusInternalServerError, responses.ErrorAPI{Error: error.Error()})
+		return
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode >= 400 {
+		responses.TreatError(w, response)
+		return
+	}
+
+	var users []models.User
+	if error = json.NewDecoder(response.Body).Decode(&users); error != nil {
+		responses.JSON(w, http.StatusUnprocessableEntity, responses.ErrorAPI{Error: error.Error()})
+		return
+	}
+
+	utils.ExecutingTemplate(w, "users.html", users)
 }
