@@ -122,3 +122,15 @@ func RenderUsersPage(w http.ResponseWriter, r *http.Request) {
 
 	utils.ExecutingTemplate(w, "users.html", users)
 }
+
+// RenderUserProfile func
+func RenderUserProfile(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	userID, error := strconv.ParseUint(params["userId"], 10, 64)
+	if error != nil {
+		responses.JSON(w, http.StatusBadRequest, responses.ErrorAPI{Error: error.Error()})
+		return
+	}
+
+	user, error := models.SearchCompletedUser(userID, r)
+}
