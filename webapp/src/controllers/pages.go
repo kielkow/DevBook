@@ -133,4 +133,6 @@ func RenderUserProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, error := models.SearchCompletedUser(userID, r)
+
+	fmt.Print(user)
 }
