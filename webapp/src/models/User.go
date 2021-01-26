@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -33,7 +34,50 @@ func SearchCompletedUser(userID uint64, r *http.Request) (User, error) {
 	go SearchFollowing(followingChannel, userID, r)
 	go SearchPublications(publicationsChannel, userID, r)
 
-	return User{}, nil
+	var (
+		user         User
+		followers    []User
+		following    []User
+		publications []Publication
+	)
+
+	for i := 0; i < 4; i++ {
+		select {
+		case userSended := <-userChannel:
+			if userSended.ID == 0 {
+				return User{}, errors.New("Error to search user data")
+			}
+
+			user = userSended
+
+		case followersSended := <-followersChannel:
+			if followersSended == nil {
+				return User{}, errors.New("Error to search user followers")
+			}
+
+			followers = followersSended
+
+		case followingSended := <-followingChannel:
+			if followingSended == nil {
+				return User{}, errors.New("Error to search user following")
+			}
+
+			following = followingSended
+
+		case publicationsSended := <-publicationsChannel:
+			if publicationsSended == nil {
+				return User{}, errors.New("Error to search user publications")
+			}
+
+			publications = publicationsSended
+		}
+	}
+
+	user.Followers = followers
+	user.Following = following
+	user.Publications = publications
+
+	return user, nil
 }
 
 // SearchUserData func
