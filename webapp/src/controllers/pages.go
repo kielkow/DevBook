@@ -133,6 +133,19 @@ func RenderUserProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, error := models.SearchCompletedUser(userID, r)
+	if error != nil {
+		responses.JSON(w, http.StatusInternalServerError, responses.ErrorAPI{Error: error.Error()})
+		return
+	}
 
-	fmt.Println(user, error)
+	cookie, _ := cookies.Read(r)
+	signinUserID, _ := strconv.ParseUint(cookie["id"], 10, 64)
+
+	utils.ExecutingTemplate(w, "user.html", struct {
+		User         models.User
+		SigninUserID uint64
+	}{
+		User:         user,
+		SigninUserID: signinUserID,
+	})
 }
