@@ -132,14 +132,19 @@ func RenderUserProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	cookie, _ := cookies.Read(r)
+	signinUserID, _ := strconv.ParseUint(cookie["id"], 10, 64)
+
+	if userID == signinUserID {
+		http.Redirect(w, r, "/profile", 302)
+		return
+	}
+
 	user, error := models.SearchCompletedUser(userID, r)
 	if error != nil {
 		responses.JSON(w, http.StatusInternalServerError, responses.ErrorAPI{Error: error.Error()})
 		return
 	}
-
-	cookie, _ := cookies.Read(r)
-	signinUserID, _ := strconv.ParseUint(cookie["id"], 10, 64)
 
 	utils.ExecutingTemplate(w, "user.html", struct {
 		User         models.User
@@ -148,4 +153,18 @@ func RenderUserProfile(w http.ResponseWriter, r *http.Request) {
 		User:         user,
 		SigninUserID: signinUserID,
 	})
+}
+
+// RenderSigninUserProfile func
+func RenderSigninUserProfile(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := cookies.Read(r)
+	userID, _ := strconv.ParseUint(cookie["id"], 10, 64)
+
+	user, error := models.SearchCompletedUser(userID, r)
+	if error != nil {
+		responses.JSON(w, http.StatusInternalServerError, responses.ErrorAPI{Error: error.Error()})
+		return
+	}
+
+	utils.ExecutingTemplate(w, "profile.html", user)
 }

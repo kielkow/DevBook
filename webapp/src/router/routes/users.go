@@ -42,4 +42,10 @@ var routesUser = []Route{
 		Function:              controllers.FollowUser,
 		RequireAuthentication: true,
 	},
+	{
+		URI:                   "/profile",
+		Method:                http.MethodGet,
+		Function:              controllers.RenderSigninUserProfile,
+		RequireAuthentication: true,
+	},
 }

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevBook - Profile</title>
+
+    <link href="/assets/css/bootstrap.css" rel="stylesheet">
+</head>
+
+<body>
+    {{ template "header" }}
+
+    <div class="container-fluid">
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            Profile
+                        </h5>
+
+                        <h6 class="card-subtitle mb-2 text-muted">
+                            {{ .Name }} - {{ .Nick }} - Member since: {{ .CreatedAt.Format "02/01/2006" }}
+                        </h6>
+
+                        <p class="card-text">
+                            <a href="#" data-toggle="modal" data-target="#modal-followers">
+                                Followers: {{ len .Followers }}
+                            </a>
+                        </p>
+                        <p class="card-text">
+                            <a href="#" data-toggle="modal" data-target="#modal-following">
+                                Following: {{ len .Following }}
+                            </a>
+                        </p>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <a href="/edit-user" class="card-link">
+                                    <button class="btn btn-info">Edit User</button>
+                                </a>
+
+                                <a href="/update-password" class="card-link">
+                                    <button class="btn btn-info">Update Password</button>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"> Publications </h5>
+                        <p class="card-text">
+                            {{ range .Publications }}
+                                {{ template "publication-with-permission" . }}
+                            {{ else }}
+                                <p class="text-muted text-center">
+                                    No publications yet...
+                                </p>
+                            {{ end }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{ template "modal-followers" . }}
+    {{ template "modal-following" . }}
+
+    {{ template "footer" }}
+    {{ template "scripts" }}
+
+    <script src="/assets/js/publications.js"></script>
+</body>
+
+</html>
