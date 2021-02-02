@@ -168,3 +168,20 @@ func RenderSigninUserProfile(w http.ResponseWriter, r *http.Request) {
 
 	utils.ExecutingTemplate(w, "profile.html", user)
 }
+
+// RenderEditUserPage func
+func RenderEditUserPage(w http.ResponseWriter, r *http.Request) {
+	cookie, _ := cookies.Read(r)
+	userID, _ := strconv.ParseUint(cookie["id"], 10, 64)
+
+	channel := make(chan models.User)
+	go models.SearchUserData(channel, userID, r)
+	user := <-channel
+
+	if user.ID == 0 {
+		responses.JSON(w, http.StatusInternalServerError, responses.ErrorAPI{Error: "Error to search user"})
+		return
+	}
+
+	utils.ExecutingTemplate(w, "edit-user.html", user)
+}

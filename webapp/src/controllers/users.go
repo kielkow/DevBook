@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"webapp/src/config"
+	"webapp/src/cookies"
 	"webapp/src/requests"
 	"webapp/src/responses"
 
@@ -80,6 +81,38 @@ func FollowUser(w http.ResponseWriter, r *http.Request) {
 
 	url := fmt.Sprintf("%s/users/%d/follow", config.APIURL, userID)
 	response, error := requests.DoAuthenticateRequest(r, http.MethodPost, url, nil)
+	if error != nil {
+		responses.JSON(w, http.StatusInternalServerError, responses.ErrorAPI{Error: error.Error()})
+		return
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode >= 400 {
+		responses.TreatError(w, response)
+		return
+	}
+
+	responses.JSON(w, response.StatusCode, nil)
+}
+
+// EditUser func
+func EditUser(w http.ResponseWriter, r *http.Request) {
+	r.ParseForm()
+	user, error := json.Marshal(map[string]string{
+		"name":  r.FormValue("name"),
+		"nick":  r.FormValue("nick"),
+		"email": r.FormValue("email"),
+	})
+	if error != nil {
+		responses.JSON(w, http.StatusBadRequest, responses.ErrorAPI{Error: error.Error()})
+		return
+	}
+
+	cookie, _ := cookies.Read(r)
+	userID, _ := strconv.ParseUint(cookie["id"], 10, 64)
+
+	url := fmt.Sprintf("%s/users/%d", config.APIURL, userID)
+	response, error := requests.DoAuthenticateRequest(r, http.MethodPut, url, bytes.NewBuffer(user))
 	if error != nil {
 		responses.JSON(w, http.StatusInternalServerError, responses.ErrorAPI{Error: error.Error()})
 		return

@@ -48,4 +48,16 @@ var routesUser = []Route{
 		Function:              controllers.RenderSigninUserProfile,
 		RequireAuthentication: true,
 	},
+	{
+		URI:                   "/edit-user",
+		Method:                http.MethodGet,
+		Function:              controllers.RenderEditUserPage,
+		RequireAuthentication: true,
+	},
+	{
+		URI:                   "/edit-user",
+		Method:                http.MethodPut,
+		Function:              controllers.EditUser,
+		RequireAuthentication: true,
+	},
 }
