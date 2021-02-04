@@ -69,23 +69,22 @@ function updatePassword(event) {
 
     if (newPassword != confirmationPassword) {
         Swal.fire('Ops...', 'The passwords does not match!', 'warning');
-        return
+        return;
     }
 
     $.ajax({
         url: '/update-password',
-        method: 'PUT',
+        method: 'POST',
         data: {
-            name,
-            email,
-            nick,
+            current: currentPassword,
+            new: newPassword,
         }
     }).done(function() {
-        Swal.fire('Success', 'User updated with success!', 'success').then(function() {
+        Swal.fire('Success', 'Password updated with success!', 'success').then(function() {
             window.location = '/profile';
         });
     }).fail(function(error) {
         console.log(error);
-        Swal.fire('Ops...', 'Error to edit user!', 'error');
+        Swal.fire('Ops...', 'Error to update password!', 'error');
     });
 }
