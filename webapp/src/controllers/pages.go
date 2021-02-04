@@ -185,3 +185,8 @@ func RenderEditUserPage(w http.ResponseWriter, r *http.Request) {
 
 	utils.ExecutingTemplate(w, "edit-user.html", user)
 }
+
+// RenderUpdatePasswordPage func
+func RenderUpdatePasswordPage(w http.ResponseWriter, r *http.Request) {
+	utils.ExecutingTemplate(w, "update-password.html", nil)
+}

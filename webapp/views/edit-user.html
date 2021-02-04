@@ -25,13 +25,13 @@
 
                     <div class="form-group">
                         <label for="email">E-mail</label>
-                        <input type="text" class="form-control" id="email" email="email" 
+                        <input type="text" class="form-control" id="email" name="email" 
                         placeholder="Your email..." value="{{ .Email }}" required="required">
                     </div>
 
                     <div class="form-group">
                         <label for="nick">Nick</label>
-                        <input type="text" class="form-control" id="nick" nick="nick" 
+                        <input type="text" class="form-control" id="nick" name="nick" 
                         placeholder="Your nick..." value="{{ .Nick }}" required="required">
                     </div>
 
@@ -43,5 +43,8 @@
 
     {{ template "footer" }}
     {{ template "scripts" }}
+
     <script src="/assets/js/user.js"></script>
 </body>
+
+</html>

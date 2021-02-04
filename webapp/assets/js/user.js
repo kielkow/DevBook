@@ -1,6 +1,7 @@
 $('#unfollow').on('click', unfollow);
 $('#follow').on('click', follow);
 $('#edit-user').on('submit', edit);
+$('#update-password').on('submit', updatePassword);
 
 function unfollow() {
     const userId = $(this).data('user-id');
@@ -43,6 +44,36 @@ function edit(event) {
 
     $.ajax({
         url: '/edit-user',
+        method: 'PUT',
+        data: {
+            name,
+            email,
+            nick,
+        }
+    }).done(function() {
+        Swal.fire('Success', 'User updated with success!', 'success').then(function() {
+            window.location = '/profile';
+        });
+    }).fail(function(error) {
+        console.log(error);
+        Swal.fire('Ops...', 'Error to edit user!', 'error');
+    });
+}
+
+function updatePassword(event) {
+    event.preventDefault();
+
+    const currentPassword = $('#current-password').val();
+    const newPassword = $('#new-password').val();
+    const confirmationPassword = $('#confirmation-password').val();
+
+    if (newPassword != confirmationPassword) {
+        Swal.fire('Ops...', 'The passwords does not match!', 'warning');
+        return
+    }
+
+    $.ajax({
+        url: '/update-password',
         method: 'PUT',
         data: {
             name,
