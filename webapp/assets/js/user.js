@@ -2,6 +2,7 @@ $('#unfollow').on('click', unfollow);
 $('#follow').on('click', follow);
 $('#edit-user').on('submit', edit);
 $('#update-password').on('submit', updatePassword);
+$('#delete-user').on('click', deleteUser);
 
 function unfollow() {
     const userId = $(this).data('user-id');
@@ -86,5 +87,29 @@ function updatePassword(event) {
     }).fail(function(error) {
         console.log(error);
         Swal.fire('Ops...', 'Error to update password!', 'error');
+    });
+}
+
+function deleteUser() {
+    Swal.fire({
+        title: 'Attention!',
+        text: 'Are sure about that?',
+        showCancelButton: true,
+        cancelButtonText: 'Cancel',
+        icon: 'warning'
+    }).then(function(confirmation) {
+        if (confirmation.value) {
+            $.ajax({
+                url: '/delete-user',
+                method: 'DELETE',
+            }).done(function() {
+                Swal.fire('Success', 'Account deleted with success!', 'success').then(function() {
+                    window.location = '/logout';
+                });
+            }).fail(function(error) {
+                console.log(error);
+                Swal.fire('Ops...', 'Error to delete your account!', 'error');
+            });
+        }
     });
 }
